@@ -181,27 +181,48 @@ func push_down_rows(full_row):
 				target_alternative = 0
 			set_cell(0, Vector2i(x,y), target_id, Vector2i(0, 0), target_alternative)
 
-
-
-func is_position_valid() -> bool:
-	for pos in current_piece.current_cells:
-		var id = get_cell_source_id(0, current_piece.current_position + pos)
+func _is_position_valid(respect, cells) -> bool:
+	for pos in cells:
+		var cpos = respect + pos
+		var id = get_cell_source_id(0, cpos)
 		#allow clipping through upper end of board. id 2: locked tiles, id -1: Empty tiles
-		if (current_piece.current_position + pos).y >= lower_bounds.y and (id == 2 or id == -1):
+		if cpos.y >= lower_bounds.y and (id == 2 or id == -1):
 			return false
-		if(current_piece.current_position + pos).x < lower_bounds.x or (current_piece.current_position + pos).x > upper_bounds.x:
+		if cpos.x < lower_bounds.x or cpos.x > upper_bounds.x:
 			return false
 	return true
 
+func is_position_valid() -> bool:
+	return _is_position_valid(current_piece.current_position, current_piece.current_cells)
 
+func _shadow_relative_position(respect, cells) -> Vector2i:
+	var down = 1
+	while _is_position_valid(respect + Vector2i(0, down), cells):
+		down += 1
+	return respect + Vector2i(0, down-1)
+
+func shadow_position() -> Vector2i:
+	return _shadow_relative_position(current_piece.current_position, current_piece.current_cells)
+
+func old_shadow_position() -> Vector2i:
+	return _shadow_relative_position(current_piece.old_position, current_piece.old_cells)
 
 func render_piece():
 	for pos in current_piece.old_cells:
 		#dont render cells which are above board (through rotating)
 		if (current_piece.old_position + pos).y >= lower_bounds.y:
 			set_cell(0, current_piece.old_position + pos, 0, Vector2i(0, 0), 0)
+			
+		var shadow_pos = old_shadow_position() + pos
+		if shadow_pos.y >= lower_bounds.y:
+			set_cell(0, shadow_pos, 0, Vector2i(0, 0), 0)
 	
 	for pos in current_piece.current_cells:
 		#dont render cells which are above board (through rotating)
+		var shadow_pos = shadow_position() + pos
+		if shadow_pos.y >= lower_bounds.y and (shadow_pos-current_piece.current_position) not in current_piece.current_cells:
+			set_cell(0, shadow_pos, 1, Vector2i(0, 0), 0)
+
 		if (current_piece.current_position + pos).y >= lower_bounds.y:
 			set_cell(0, current_piece.current_position + pos, 1, Vector2i(0, 0), current_piece.tile_number)
+		
