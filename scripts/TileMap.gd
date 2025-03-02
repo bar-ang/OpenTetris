@@ -195,7 +195,7 @@ func _is_position_valid(respect, cells) -> bool:
 func is_position_valid() -> bool:
 	return _is_position_valid(current_piece.current_position, current_piece.current_cells)
 
-func _shadow_relative_position(respect, cells) -> Vector2i:
+func _shadow_relative_position(respect: Vector2i, cells: Array) -> Vector2i:
 	var down = 1
 	while _is_position_valid(respect + Vector2i(0, down), cells):
 		down += 1
