@@ -207,6 +207,18 @@ func shadow_position(piece) -> Vector2i:
 func old_shadow_position(piece) -> Vector2i:
 	return _shadow_relative_position(piece.old_position, piece.old_cells)
 
+func find_place(piece, current: bool) -> Vector2i:
+	var ppos = piece.current_position
+	var cells = piece.current_cells
+	if not current:
+		ppos = piece.old_position
+		cells = piece.old_cells
+	
+	var offset = Vector2i(1, 6) + entry_point
+	var shadow_pos = _shadow_relative_position(offset, cells)
+	
+	return shadow_pos
+
 func render_piece():
 	for pos in current_piece.old_cells:
 		#dont render cells which are above board (through rotating)
