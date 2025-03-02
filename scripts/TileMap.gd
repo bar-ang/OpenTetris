@@ -137,7 +137,12 @@ func _on_piece_moved(direction:Vector2i):
 
 
 func lock_piece():
+	var orig_shadow_pos = find_place(current_piece, true)
 	for pos in current_piece.current_cells:
+		var shadow_pos = orig_shadow_pos + pos
+		if shadow_pos.y >= lower_bounds.y and (shadow_pos-current_piece.current_position) not in current_piece.current_cells:
+			set_cell(0, shadow_pos, 0, Vector2i(0, 0), 0)
+
 		if current_piece.current_position.y + pos.y >= lower_bounds.y:	#Dont render cell which is out of bounds
 			set_cell(0, current_piece.current_position + pos, 2, Vector2i(0, 0), current_piece.tile_number)
 	current_piece.queue_free()
@@ -225,13 +230,13 @@ func render_piece():
 		if (current_piece.old_position + pos).y >= lower_bounds.y:
 			set_cell(0, current_piece.old_position + pos, 0, Vector2i(0, 0), 0)
 			
-		var shadow_pos = old_shadow_position(current_piece) + pos
+		var shadow_pos = find_place(current_piece, false) + pos
 		if shadow_pos.y >= lower_bounds.y:
 			set_cell(0, shadow_pos, 0, Vector2i(0, 0), 0)
 	
 	for pos in current_piece.current_cells:
 		#dont render cells which are above board (through rotating)
-		var shadow_pos = shadow_position(current_piece) + pos
+		var shadow_pos = find_place(current_piece, true) + pos
 		if shadow_pos.y >= lower_bounds.y and (shadow_pos-current_piece.current_position) not in current_piece.current_cells:
 			set_cell(0, shadow_pos, 1, Vector2i(0, 0), 0)
 
