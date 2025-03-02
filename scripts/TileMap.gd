@@ -201,11 +201,11 @@ func _shadow_relative_position(respect, cells) -> Vector2i:
 		down += 1
 	return respect + Vector2i(0, down-1)
 
-func shadow_position() -> Vector2i:
-	return _shadow_relative_position(current_piece.current_position, current_piece.current_cells)
+func shadow_position(piece) -> Vector2i:
+	return _shadow_relative_position(piece.current_position, piece.current_cells)
 
-func old_shadow_position() -> Vector2i:
-	return _shadow_relative_position(current_piece.old_position, current_piece.old_cells)
+func old_shadow_position(piece) -> Vector2i:
+	return _shadow_relative_position(piece.old_position, piece.old_cells)
 
 func render_piece():
 	for pos in current_piece.old_cells:
@@ -213,13 +213,13 @@ func render_piece():
 		if (current_piece.old_position + pos).y >= lower_bounds.y:
 			set_cell(0, current_piece.old_position + pos, 0, Vector2i(0, 0), 0)
 			
-		var shadow_pos = old_shadow_position() + pos
+		var shadow_pos = old_shadow_position(current_piece) + pos
 		if shadow_pos.y >= lower_bounds.y:
 			set_cell(0, shadow_pos, 0, Vector2i(0, 0), 0)
 	
 	for pos in current_piece.current_cells:
 		#dont render cells which are above board (through rotating)
-		var shadow_pos = shadow_position() + pos
+		var shadow_pos = shadow_position(current_piece) + pos
 		if shadow_pos.y >= lower_bounds.y and (shadow_pos-current_piece.current_position) not in current_piece.current_cells:
 			set_cell(0, shadow_pos, 1, Vector2i(0, 0), 0)
 
