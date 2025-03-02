@@ -206,12 +206,6 @@ func _shadow_relative_position(respect: Vector2i, cells: Array) -> Vector2i:
 		down += 1
 	return respect + Vector2i(0, down-1)
 
-func shadow_position(piece) -> Vector2i:
-	return _shadow_relative_position(piece.current_position, piece.current_cells)
-
-func old_shadow_position(piece) -> Vector2i:
-	return _shadow_relative_position(piece.old_position, piece.old_cells)
-
 func find_place(piece, current: bool) -> Vector2i:
 	var ppos = piece.current_position
 	var cells = piece.current_cells
